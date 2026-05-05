@@ -3383,17 +3383,20 @@ doc.setDrawColor(200, 210, 225);
 doc.line(M, y, 210 - M, y);
 y += 5;
 
-const detailStartY = y;
 const rowHeight = 8;
 const colWidth = 34;
-const maxY = 270;
+const maxY = 255;
+
+let detailBaseY = y;
+let indexOnPage = 0;
 
 valsGross.forEach((val, i) => {
-  const indexOnPage = i % 50;
-  const col = indexOnPage % 5;
-  const row = Math.floor(indexOnPage / 5);
+  let col = indexOnPage % 5;
+  let row = Math.floor(indexOnPage / 5);
+  let py = detailBaseY + row * rowHeight;
 
-  if (i > 0 && indexOnPage === 0) {
+  // Si on arrive trop bas, on crée une nouvelle page
+  if (py > maxY) {
     doc.addPage();
 
     doc.setFont('helvetica', 'bold');
@@ -3404,11 +3407,15 @@ valsGross.forEach((val, i) => {
     doc.setDrawColor(200, 210, 225);
     doc.line(M, 25, 210 - M, 25);
 
-    y = 32;
+    detailBaseY = 32;
+    indexOnPage = 0;
+
+    col = 0;
+    row = 0;
+    py = detailBaseY;
   }
 
   const x = M + col * colWidth;
-  const py = (i < 50 ? detailStartY : y) + row * rowHeight;
 
   const netVal = valsNet[i];
   const isOk   = netVal >= prod.tu1;
@@ -3426,10 +3433,18 @@ valsGross.forEach((val, i) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
   doc.text(val.toFixed(1) + ' g', x + 10, py);
+
+  indexOnPage++;
 });
 
-const remainingOnLastPage = valsGross.length % 50 || 50;
-y = (valsGross.length <= 50 ? detailStartY : 32) + Math.ceil(remainingOnLastPage / 5) * rowHeight + 10;
+const rowsUsed = Math.ceil(indexOnPage / 5);
+y = detailBaseY + rowsUsed * rowHeight + 10;
+
+// Sécurité avant le verdict final
+if (y > 255) {
+  doc.addPage();
+  y = 30;
+}
 
   /* Verdict final */
   const vc = r.vF === 'ok' ? [8,42,28,26,201,109,13,110,86] : r.vF === 'warn' ? [45,30,8,232,137,26,186,117,23] : [45,14,14,214,59,59,163,45,45];
