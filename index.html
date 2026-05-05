@@ -2606,9 +2606,9 @@ function updateLiveStats() {
   moyEl.textContent = moy !== null ? moy.toFixed(1) + ' g' : '—';
   moyEl.className = 'stat-val' + (moy === null ? '' : (moy >= curProd.qn ? ' ok' : ' err'));
 
-  const maxTU1Live = getMaxTU1Allowed(vNet.length);
-  document.getElementById('sc-tu1').textContent = `${tu1} / ${expectedCount} (${maxTU1Live} autorisé)`;
-  document.getElementById('sc-tu1').className = 'stat-val' + (tu1 > maxTU1Live ? ' err' : (tu1 > 0 ? ' warn' : ''));
+  const maxTU1Live = getMaxTU1Allowed(expectedCount);
+document.getElementById('sc-tu1').textContent = `${tu1} / ${expectedCount} (${maxTU1Live} autorisé)`;
+document.getElementById('sc-tu1').className = 'stat-val' + (tu1 > maxTU1Live ? ' err' : (tu1 > 0 ? ' warn' : ''));
 
   document.getElementById('sc-tu2').textContent = tu2;
   document.getElementById('sc-tu2').className = 'stat-val' + (tu2 > 0 ? ' err' : '');
