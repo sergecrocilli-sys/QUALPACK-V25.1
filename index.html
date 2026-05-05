@@ -3385,18 +3385,13 @@ y += 5;
 
 const rowHeight = 8;
 const colWidth = 34;
-const maxY = 255;
 
 let detailBaseY = y;
 let indexOnPage = 0;
+let currentPageLimit = 25;
 
 valsGross.forEach((val, i) => {
-  let col = indexOnPage % 5;
-  let row = Math.floor(indexOnPage / 5);
-  let py = detailBaseY + row * rowHeight;
-
-  // Si on arrive trop bas, on crée une nouvelle page
-  if (py > maxY) {
+  if (indexOnPage >= currentPageLimit) {
     doc.addPage();
 
     doc.setFont('helvetica', 'bold');
@@ -3409,13 +3404,13 @@ valsGross.forEach((val, i) => {
 
     detailBaseY = 32;
     indexOnPage = 0;
-
-    col = 0;
-    row = 0;
-    py = detailBaseY;
+    currentPageLimit = 100;
   }
 
+  const col = indexOnPage % 5;
+  const row = Math.floor(indexOnPage / 5);
   const x = M + col * colWidth;
+  const py = detailBaseY + row * rowHeight;
 
   const netVal = valsNet[i];
   const isOk   = netVal >= prod.tu1;
@@ -3445,7 +3440,6 @@ if (y > 255) {
   doc.addPage();
   y = 30;
 }
-
   /* Verdict final */
   const vc = r.vF === 'ok' ? [8,42,28,26,201,109,13,110,86] : r.vF === 'warn' ? [45,30,8,232,137,26,186,117,23] : [45,14,14,214,59,59,163,45,45];
   doc.setFillColor(vc[0], vc[1], vc[2]);
